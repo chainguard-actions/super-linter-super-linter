@@ -1,0 +1,9 @@
+{
+  "name": "super-linter-dev-tools-container-image",
+  "private": true,
+  "version": "0.0.1-local",
+  "dependencies": {
+    "release-please": "^17.3.0"
+  },
+  "license": "MIT"
+}

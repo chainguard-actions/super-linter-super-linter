@@ -1,0 +1,12 @@
+---
+name: "Super-Linter slim"
+author: "Super-linter contributors"
+description: "Super-linter is a ready-to-run collection of linters and code analyzers, to help validate your source code."
+runs:
+  using: "docker"
+  image: "docker://ghcr.io/super-linter/super-linter@sha256:a56c57c3fbe361bf07173c35c1a8bb3839fc64e363021fdb67798625ea3f3565" # slim-v8.6.0
+branding:
+  icon: "check-square"
+  color: "white"
+# You can view https://github.com/super-linter/super-linter#environment-variables
+# to see a comprehensive list of all environment variables that can be passed

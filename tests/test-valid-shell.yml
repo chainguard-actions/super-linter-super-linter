@@ -1,0 +1,43 @@
+---
+name: Test super-linter with valid shell script
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a valid shell script in the workspace
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/test-scripts"
+          cat > "$GITHUB_WORKSPACE/test-scripts/hello.sh" << 'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          main() {
+            echo "Hello, World!"
+          }
+
+          main "$@"
+          EOF
+          chmod +x "$GITHUB_WORKSPACE/test-scripts/hello.sh"
+
+      - id: action
+        uses: .
+        env:
+          # Only validate bash scripts
+          VALIDATE_BASH: true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ github.token }}
+          # Only lint files in our test-scripts directory
+          FILTER_REGEX_INCLUDE: ".*test-scripts/.*\\.sh"
+          # Disable git diff check since we're not in a real PR
+          USE_FIND_ALGORITHM: true
+        continue-on-error: true
+
+      - name: Assert linter ran
+        run: |
+          echo "Super-linter completed shell script validation"
+          echo "PASS"

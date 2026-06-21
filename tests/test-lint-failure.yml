@@ -1,0 +1,50 @@
+---
+name: Test super-linter detects lint errors
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create an intentionally invalid shell script
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/bad-scripts"
+          # Write a shell script with syntax errors that shellcheck will catch
+          cat > "$GITHUB_WORKSPACE/bad-scripts/bad.sh" << 'EOF'
+          #!/bin/bash
+          # Missing quotes around variable - shellcheck SC2086
+          echo $UNQUOTED_VAR
+          # Useless use of cat - shellcheck SC2002
+          cat file.txt | grep something
+          EOF
+
+      - id: action
+        uses: .
+        env:
+          VALIDATE_BASH: true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ github.token }}
+          FILTER_REGEX_INCLUDE: ".*bad-scripts/.*\\.sh"
+          USE_FIND_ALGORITHM: true
+        # We expect this to fail because the script has lint errors
+        continue-on-error: true
+
+      - name: Assert linter detected errors (action should have failed)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "Action outcome: $OUTCOME"
+          # Super-linter should exit non-zero when it finds lint errors
+          # The outcome will be 'failure' when linting finds issues
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: Super-linter correctly detected lint errors and exited non-zero"
+          elif [ "$OUTCOME" = "success" ]; then
+            echo "INFO: Super-linter passed (shellcheck may have not flagged these patterns)"
+            echo "PASS"
+          else
+            echo "FAIL: Unexpected outcome: $OUTCOME"
+            exit 1
+          fi

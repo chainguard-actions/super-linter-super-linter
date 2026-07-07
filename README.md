@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v8.6.0 | [`v8.6.0`](https://github.com/chainguard-actions/super-linter-super-linter/tree/v8.6.0) | [`9e86335`](https://github.com/super-linter/super-linter/commit/9e863354e3ff62e0727d37183162c4a88873df41) |
+| v8.7.0 | [`v8.7.0`](https://github.com/chainguard-actions/super-linter-super-linter/tree/v8.7.0) | [`4ce2083`](https://github.com/super-linter/super-linter/commit/4ce20838b8ab83717e78138c5b3a1407148e0918) |
 
 ## Privacy
 

@@ -1,0 +1,19 @@
+{
+  "absolute": true,
+  "ignore": [
+    "**/ISSUE_TEMPLATE/bug_report.yml",
+    "**/ISSUE_TEMPLATE/feature_request.yml",
+    "**/github-step-summary.md",
+    "**/node_modules/**",
+    "**/package.json",
+    "**/package-lock.json",
+    "**/test/data/**",
+    "**/test/linters/**",
+    "**/test/linters-config/**",
+    "**/github_conf/**",
+    "**/workflows/cd.yml",
+    "**/workflows/ci.yml"
+  ],
+  "reporters": ["consoleFull"],
+  "threshold": 0
+}

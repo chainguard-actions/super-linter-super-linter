@@ -1,0 +1,256 @@
+---
+version: 2
+updates:
+  - package-ecosystem: "devcontainers"
+    commit-message:
+      prefix: "chore(devcontainer)"
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+
+  - package-ecosystem: github-actions
+    commit-message:
+      prefix: "ci(github-actions)"
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      github-actions-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      dev-ci-tools:
+        applies-to: version-updates
+        patterns:
+          - actions/*
+          - akhilerm/tag-push-action
+          - dependabot/*
+          - docker/*
+          - googleapis/*
+          - peter-evans/create-issue-from-file
+
+  - package-ecosystem: "npm"
+    commit-message:
+      prefix: "deps(npm)"
+    directories:
+      - /dependencies
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      npm-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      npm:
+        applies-to: version-updates
+        patterns:
+          - "@babel/eslint-parser"
+          - "@babel/preset-react"
+          - "@babel/preset-typescript"
+          - "@biomejs/biome"
+          - "@commitlint/*"
+          - "@react-native/eslint-config"
+          - "@typescript-eslint/eslint-plugin"
+          - "commitlint"
+          # TODO: add eslint back to this group after other dependencies are
+          # compatible with eslint >= 10.0.0
+          # - eslint
+          - "eslint-config*"
+          - "eslint-plugin*"
+          - jscpd
+          - npm-groovy-lint
+          - "react*"
+          - "stylelint*"
+          - "textlint*"
+          - htmlhint
+          - markdownlint-cli
+          - next
+          - next-pwa
+          - prettier
+          - renovate
+          - typescript
+
+  - package-ecosystem: "bundler"
+    commit-message:
+      prefix: "deps(bundler)"
+    directory: "/dependencies"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      bundler-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      rubocop:
+        applies-to: version-updates
+        patterns:
+          - "rubocop*"
+
+  - package-ecosystem: "docker"
+    commit-message:
+      prefix: "deps(docker)"
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      docker-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker:
+        applies-to: version-updates
+        # We can group all Docker dependencies because they are isolated from
+        # each other
+        patterns:
+          - aquasecurity/trivy
+          - alpine/helm
+          - alpine/terragrunt
+          - dotenvlinter/dotenv-linter
+          - dotnet/sdk
+          - golang
+          - golangci/golangci-lint
+          - goreleaser/goreleaser
+          - hadolint/hadolint
+          - hashicorp/terraform
+          - kustomize/kustomize
+          - terraform-linters/tflint
+          - koalaman/shellcheck
+          - mstruebing/editorconfig-checker
+          - mvdan/shfmt
+          - rhysd/actionlint
+          - scalameta/scalafmt
+          - zricethezav/gitleaks
+          - yoheimuta/protolint
+          - clj-kondo/clj-kondo
+          - dart
+          - powershell
+          - composer/composer
+          - yannh/kubeconform
+      docker-base-images:
+        applies-to: version-updates
+        patterns:
+          # Move the base image to a dedicated group to avoid blocking other
+          # dependencies in the case of wheel not being available for more
+          # recent Python version
+          - python
+
+  - package-ecosystem: "pip"
+    commit-message:
+      prefix: "deps(python)"
+    directories:
+      - /dependencies/python/
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      pip-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      pip:
+        applies-to: version-updates
+        # We can group all python dependencies because each uses its own
+        # virtual environments
+        patterns:
+          - ansible-lint
+          - black
+          - cfn-lint
+          - checkov
+          - codespell
+          - cpplint
+          - flake8
+          - isort
+          - mypy
+          - nbqa
+          - pre-commit
+          - pylint
+          - ruff
+          - snakefmt
+          - snakemake
+          - sqlfluff
+          - yamllint
+          - zizmor
+
+  - package-ecosystem: "gradle"
+    commit-message:
+      prefix: "deps(java)"
+    directories:
+      - "/dependencies/checkstyle"
+      - "/dependencies/google-java-format"
+      - "/dependencies/ktlint"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      gradle-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      java-gradle:
+        applies-to: version-updates
+        # We can group all Java dependencies because they are isolated from
+        # each other
+        patterns:
+          - "com.google.googlejavaformat:google-java-format"
+          - "com.pinterest.ktlint:ktlint-cli"
+          - "com.puppycrawl.tools:checkstyle"
+
+  - package-ecosystem: "docker"
+    commit-message:
+      prefix: "ci(dev-docker)"
+    directory: "/dev-dependencies"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      docker-dev-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker-dev:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "npm"
+    commit-message:
+      prefix: "ci(dev-npm)"
+    directories:
+      - /dev-dependencies
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      npm-dev-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      npm-dev:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "composer"
+    commit-message:
+      prefix: "deps(php)"
+    directories:
+      - dependencies/composer
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 100
+    groups:
+      composer-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      composer:
+        applies-to: version-updates
+        patterns:
+          - squizlabs/php_codesniffer
+          - phpstan/phpstan
+          - vimeo/psalm

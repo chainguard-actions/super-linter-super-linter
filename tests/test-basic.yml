@@ -1,0 +1,32 @@
+---
+name: Test basic super-linter usage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Run super-linter (JSON only, find algorithm)
+        id: action
+        uses: .
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_LOCAL: "true"
+          DEFAULT_WORKSPACE: /github/workspace
+          VALIDATE_ALL_CODEBASE: "true"
+          USE_FIND_ALGORITHM: "true"
+          VALIDATE_JSON: "true"
+          FILTER_REGEX_INCLUDE: ".*tests/fixtures/json/.*"
+          LOG_LEVEL: WARN
+          SUPPRESS_POSSUM: "true"
+          IGNORE_GITIGNORED_FILES: "false"
+          MULTI_STATUS: "false"
+
+      - name: Assert linter completed successfully
+        run: |
+          echo "Super-linter completed without error for valid JSON"
+          echo "PASS"

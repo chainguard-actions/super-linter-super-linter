@@ -23,16 +23,16 @@ jobs:
       - name: Check if the pull request contains a single commit
         if: github.event_name == 'pull_request'
         env:
-          PR_COMMIT_COUNT: ${{ github.event.pull_request.commits }}
+          COMMIT_COUNT: ${{ github.event.pull_request.commits }}
         run: |
-          commit_count="${PR_COMMIT_COUNT}"
+          commit_count="${COMMIT_COUNT}"
 
           if [ -z "${commit_count}" ]; then
             echo "[ERROR] commit_count is empty"
             exit 1
           fi
 
-          if [[ "${commit_count}" -ne 1 ]]; then
+          if [[ ${commit_count} -ne 1 ]]; then
             echo "[ERROR] This pull request contains ${commit_count} commits. Squash these commits into a single commit."
             exit 1
           else

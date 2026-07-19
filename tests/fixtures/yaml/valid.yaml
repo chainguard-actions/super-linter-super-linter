@@ -1,6 +1,8 @@
 ---
 name: example
 version: "1.0.0"
+description: A simple example YAML file
 items:
-  - foo
-  - bar
+  - one
+  - two
+  - three

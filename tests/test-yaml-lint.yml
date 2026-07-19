@@ -1,5 +1,5 @@
 ---
-name: Test super-linter basic usage
+name: Test super-linter YAML linting
 on:
   workflow_dispatch:
 jobs:
@@ -10,17 +10,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run super-linter on JSON only
+      - name: Run super-linter on YAML only
         id: action
         uses: .
         continue-on-error: true
         env:
-          # Run in local mode so it doesn't need git history
           RUN_LOCAL: "true"
-          # Only validate JSON to keep the test fast
           VALIDATE_ALL_CODEBASE: "true"
-          VALIDATE_JSON: "true"
-          # Disable all other linters
+          VALIDATE_YAML: "true"
+          # Disable all other linters explicitly
           VALIDATE_ANSIBLE: "false"
           VALIDATE_ARM: "false"
           VALIDATE_BASH: "false"
@@ -48,6 +46,7 @@ jobs:
           VALIDATE_JAVASCRIPT_PRETTIER: "false"
           VALIDATE_JAVASCRIPT_STANDARD: "false"
           VALIDATE_JSCPD: "false"
+          VALIDATE_JSON: "false"
           VALIDATE_JSX: "false"
           VALIDATE_KOTLIN: "false"
           VALIDATE_KUBERNETES_KUBECONFORM: "false"
@@ -93,9 +92,8 @@ jobs:
           VALIDATE_TYPESCRIPT_PRETTIER: "false"
           VALIDATE_TYPESCRIPT_STANDARD: "false"
           VALIDATE_XML: "false"
-          VALIDATE_YAML: "false"
-          # Only lint the specific JSON fixture file
-          FILTER_REGEX_INCLUDE: ".*tests/fixtures/json/.*"
+          # Only lint the specific YAML fixture file
+          FILTER_REGEX_INCLUDE: ".*tests/fixtures/yaml/.*"
           # Inside the super-linter Docker container, the workspace is mounted at
           # /github/workspace — use that path, not ${{ github.workspace }}
           DEFAULT_WORKSPACE: /github/workspace

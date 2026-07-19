@@ -34,13 +34,13 @@ jobs:
       - name: Set build metadata
         id: set-container-image-build-metadata
         env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          GIT_SHA: ${{ github.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if [[ "${GITHUB_EVENT_NAME}" == 'push' ]] || [[ "${GITHUB_EVENT_NAME}" == 'merge_group' ]]; then
-            BUILD_REVISION="${GITHUB_SHA}"
-          elif [[ "${GITHUB_EVENT_NAME}" == 'pull_request' ]]; then
+          if [[ "${EVENT_NAME}" == 'push' ]] || [[ "${EVENT_NAME}" == 'merge_group' ]]; then
+            BUILD_REVISION="${GIT_SHA}"
+          elif [[ "${EVENT_NAME}" == 'pull_request' ]]; then
             BUILD_REVISION="${PR_HEAD_SHA}"
           else
             echo "[ERROR] Event not supported when setting build revision and build version"
@@ -68,17 +68,20 @@ jobs:
           echo "Build revision (GH Actions workflow): ${BUILD_REVISION}"
           echo "Build version (GH Actions workflow): ${BUILD_VERSION}"
 
+          safe_build_date=$(printf '%s' "${BUILD_DATE}" | tr -d '\n\r')
           safe_build_revision=$(printf '%s' "${BUILD_REVISION}" | tr -d '\n\r')
+          safe_build_version=$(printf '%s' "${BUILD_VERSION}" | tr -d '\n\r')
+
           {
-            echo "BUILD_DATE=${BUILD_DATE}"
+            echo "BUILD_DATE=${safe_build_date}"
             echo "BUILD_REVISION=${safe_build_revision}"
-            echo "BUILD_VERSION=${BUILD_VERSION}"
+            echo "BUILD_VERSION=${safe_build_version}"
           } >> "${GITHUB_ENV}"
 
           {
-            echo "CONTAINER_IMAGE_BUILD_DATE=${BUILD_DATE}"
+            echo "CONTAINER_IMAGE_BUILD_DATE=${safe_build_date}"
             echo "CONTAINER_IMAGE_BUILD_REVISION=${safe_build_revision}"
-            echo "CONTAINER_IMAGE_BUILD_VERSION=${BUILD_VERSION}"
+            echo "CONTAINER_IMAGE_BUILD_VERSION=${safe_build_version}"
           } >> "${GITHUB_OUTPUT}"
 
   build-stages:
@@ -418,9 +421,9 @@ jobs:
 
       - name: Setup authentication token
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN_VALUE: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "${GH_TOKEN}" > .github-personal-access-token
+          echo "${GITHUB_TOKEN_VALUE}" > .github-personal-access-token
 
       - name: Generate a preview of the release notes
         run: |

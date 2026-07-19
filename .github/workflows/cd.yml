@@ -121,14 +121,14 @@ jobs:
 
       - name: Set build metadata
         env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          GIT_SHA: ${{ github.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           IMAGE_PREFIX: ${{ matrix.images.prefix }}
         run: |
-          if [[ "${GITHUB_EVENT_NAME}" == 'push' ]] || [[ "${GITHUB_EVENT_NAME}" == 'merge_group' ]]; then
-            BUILD_REVISION="${GITHUB_SHA}"
-          elif [[ "${GITHUB_EVENT_NAME}" == 'pull_request' ]]; then
+          if [[ "${EVENT_NAME}" == 'push' ]] || [[ "${EVENT_NAME}" == 'merge_group' ]]; then
+            BUILD_REVISION="${GIT_SHA}"
+          elif [[ "${EVENT_NAME}" == 'pull_request' ]]; then
             BUILD_REVISION="${PR_HEAD_SHA}"
           else
             echo "[ERROR] Event not supported when setting build revision and build version"
@@ -161,11 +161,14 @@ jobs:
           # doesn't try fetching build metadata from a non-existing image whose
           # tag is stored in CONTAINER_IMAGE_ID.
           safe_prefix=$(printf '%s' "${IMAGE_PREFIX}" | tr -d '\n\r')
+          safe_build_date=$(printf '%s' "${BUILD_DATE}" | tr -d '\n\r')
+          safe_build_revision=$(printf '%s' "${BUILD_REVISION}" | tr -d '\n\r')
+          safe_build_version=$(printf '%s' "${BUILD_VERSION}" | tr -d '\n\r')
           {
             echo "CONTAINER_IMAGE_ID=ghcr.io/super-linter/super-linter:${safe_prefix}latest"
-            echo "BUILD_DATE=${BUILD_DATE}"
-            echo "BUILD_REVISION=${BUILD_REVISION}"
-            echo "BUILD_VERSION=${BUILD_VERSION}"
+            echo "BUILD_DATE=${safe_build_date}"
+            echo "BUILD_REVISION=${safe_build_revision}"
+            echo "BUILD_VERSION=${safe_build_version}"
           } >> "${GITHUB_ENV}"
 
       - name: Free Disk space
@@ -297,7 +300,7 @@ jobs:
             exit 1
           fi
 
-          if ! echo "${RELEASE_VERSION}" | grep -E -o "v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+"; then
+          if ! echo "${RELEASE_VERSION}" | grep -E -x "v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+"; then
             echo "Error: RELEASE_VERSION doesn't look like a semantic version: ${RELEASE_VERSION}"
             exit 2
           fi
@@ -305,10 +308,11 @@ jobs:
           SEMVER_MAJOR_VERSION=v${STEPS_RELEASE_OUTPUTS_MAJOR}
 
           safe_release_version=$(printf '%s' "${RELEASE_VERSION}" | tr -d '\n\r')
-          safe_semver_major=$(printf '%s' "${SEMVER_MAJOR_VERSION}" | tr -d '\n\r')
+          safe_semver_major_version=$(printf '%s' "${SEMVER_MAJOR_VERSION}" | tr -d '\n\r')
+
           {
             echo "RELEASE_VERSION=${safe_release_version}"
-            echo "SEMVER_MAJOR_VERSION=${safe_semver_major}"
+            echo "SEMVER_MAJOR_VERSION=${safe_semver_major_version}"
           } >> "${GITHUB_ENV}"
         env:
           STEPS_RELEASE_OUTPUTS_TAG_NAME: ${{ steps.release.outputs.tag_name }}

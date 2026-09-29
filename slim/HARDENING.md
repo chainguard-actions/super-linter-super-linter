@@ -16,7 +16,9 @@ Action **super-linter--super-linter--slim/v8.7.0** was hardened automatically. 1
 
 ### unpinned-uses (severity: high)
 
-The action uses a Docker image referenced by a mutable version tag rather than an immutable SHA digest. The image `docker://ghcr.io/super-linter/super-linter:slim-v8.7.0` uses the tag `slim-v8.7.0`, which can be silently overwritten on the registry, enabling a supply-chain attack. It should be pinned to a full SHA256 digest, e.g. `image: ghcr.io/super-linter/super-linter@sha256:<64-hex-char-digest> # slim-v8.7.0`.
+The action uses a Docker image pinned to a mutable tag (`slim-v8.7.0`) rather than an immutable SHA digest. If the tag is moved (e.g. by a compromised registry or a supply-chain attack), the action will silently execute a different image. The `image:` field should be changed to reference the image by its SHA-256 digest, e.g. `image: ghcr.io/super-linter/super-linter@sha256:<64-hex-char-digest> # slim-v8.7.0`.
+
+Offending line: `image: "docker://ghcr.io/super-linter/super-linter:slim-v8.7.0"`
 
 Locations:
 
@@ -30,5 +32,5 @@ Locations:
 
 **Notes:**
 
-Pinned the Docker image reference in hardened/action/action.yml from `docker://ghcr.io/super-linter/super-linter:slim-v8.7.0` to `docker://ghcr.io/super-linter/super-linter:slim-v8.7.0@sha256:c95c714f746edc70e54926a69e229c834ffcdec2450bd3475f7865164d749a56`. The docker:// scheme and tag are preserved inline; the SHA256 digest was resolved via the Docker Registry API.
+Pinned the Docker image in action.yml from the mutable tag `slim-v8.7.0` to its immutable SHA256 digest. The image reference is now `docker://ghcr.io/super-linter/super-linter:slim-v8.7.0@sha256:c95c714f746edc70e54926a69e229c834ffcdec2450bd3475f7865164d749a56`, preserving the `docker://` scheme and the tag for readability.
 

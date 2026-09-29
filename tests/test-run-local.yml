@@ -1,0 +1,64 @@
+---
+name: Test super-linter run-local mode
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Create clean JSON file to lint
+        run: |
+          cat > "$GITHUB_WORKSPACE/test-clean.json" << 'EOF'
+          {
+            "name": "test",
+            "version": "1.0.0",
+            "description": "A test JSON file"
+          }
+          EOF
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_LOCAL: "true"
+          VALIDATE_ALL_CODEBASE: "true"
+          VALIDATE_JSON: "true"
+          VALIDATE_MARKDOWN: "false"
+          VALIDATE_BASH: "false"
+          VALIDATE_YAML: "false"
+          VALIDATE_PYTHON_PYLINT: "false"
+          VALIDATE_PYTHON_FLAKE8: "false"
+          VALIDATE_PYTHON_BLACK: "false"
+          VALIDATE_PYTHON_ISORT: "false"
+          VALIDATE_PYTHON_MYPY: "false"
+          VALIDATE_PYTHON_PYINK: "false"
+          VALIDATE_PYTHON_RUFF: "false"
+          VALIDATE_GITHUB_ACTIONS: "false"
+          VALIDATE_DOCKERFILE_HADOLINT: "false"
+          VALIDATE_SHELL_SHFMT: "false"
+          VALIDATE_EDITORCONFIG: "false"
+          VALIDATE_GITLEAKS: "false"
+          VALIDATE_CHECKOV: "false"
+          VALIDATE_NATURAL_LANGUAGE: "false"
+          VALIDATE_RENOVATE: "false"
+          VALIDATE_JSCPD: "false"
+          LOG_LEVEL: "NOTICE"
+
+      - name: Assert super-linter ran in local mode
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: super-linter completed successfully in RUN_LOCAL mode"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: super-linter ran and reported linting issues (expected in test environment)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

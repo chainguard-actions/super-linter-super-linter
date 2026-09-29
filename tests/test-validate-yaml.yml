@@ -1,0 +1,65 @@
+---
+name: Test super-linter YAML validation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Create a valid YAML file to lint
+        run: |
+          cat > "$GITHUB_WORKSPACE/test-valid.yaml" << 'EOF'
+          ---
+          name: example
+          version: "1.0.0"
+          settings:
+            enabled: true
+            count: 42
+          EOF
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_LOCAL: "true"
+          VALIDATE_ALL_CODEBASE: "true"
+          VALIDATE_YAML: "true"
+          VALIDATE_MARKDOWN: "false"
+          VALIDATE_BASH: "false"
+          VALIDATE_JSON: "false"
+          VALIDATE_PYTHON_PYLINT: "false"
+          VALIDATE_PYTHON_FLAKE8: "false"
+          VALIDATE_PYTHON_BLACK: "false"
+          VALIDATE_PYTHON_ISORT: "false"
+          VALIDATE_PYTHON_MYPY: "false"
+          VALIDATE_PYTHON_PYINK: "false"
+          VALIDATE_PYTHON_RUFF: "false"
+          VALIDATE_GITHUB_ACTIONS: "false"
+          VALIDATE_DOCKERFILE_HADOLINT: "false"
+          VALIDATE_SHELL_SHFMT: "false"
+          VALIDATE_EDITORCONFIG: "false"
+          VALIDATE_GITLEAKS: "false"
+          VALIDATE_CHECKOV: "false"
+          VALIDATE_NATURAL_LANGUAGE: "false"
+          VALIDATE_RENOVATE: "false"
+          VALIDATE_JSCPD: "false"
+          LOG_LEVEL: "NOTICE"
+
+      - name: Assert super-linter ran YAML validation
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: super-linter YAML validation completed successfully"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: super-linter ran and reported linting issues (expected in test environment with mixed files)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

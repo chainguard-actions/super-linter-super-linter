@@ -1,0 +1,7 @@
+{
+  "name": "test-config",
+  "version": "1.0.0",
+  "description": "A test JSON file for super-linter validation",
+  "enabled": true,
+  "count": 42
+}

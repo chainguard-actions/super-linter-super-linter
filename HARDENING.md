@@ -8,7 +8,7 @@
 
 **Test Policy SHA:** `843adf9e4b8f85d0c08b27b9d0b09dd094b54702`
 
-**Harden Agent Version:** `1`
+**Harden Agent Version:** `2`
 
 Action **super-linter--super-linter/v8.3.2** was hardened automatically. 1 finding(s) were identified and resolved across 1 iteration(s).
 
@@ -16,12 +16,7 @@ Action **super-linter--super-linter/v8.3.2** was hardened automatically. 1 findi
 
 ### unpinned-uses (severity: high)
 
-Both action.yml and slim/action.yml use Docker image references with mutable version tags instead of immutable SHA digests. This exposes the action to supply-chain attacks where the image tag could be silently updated to a malicious version.
-
-- action.yml: `image: "docker://ghcr.io/super-linter/super-linter:v8.3.2"` — uses tag `v8.3.2`, not a SHA digest.
-- slim/action.yml: `image: "docker://ghcr.io/super-linter/super-linter:slim-v8.3.2"` — uses tag `slim-v8.3.2`, not a SHA digest.
-
-These should be pinned to a full SHA256 digest, e.g. `image: "docker://ghcr.io/super-linter/super-linter@sha256:<64-hex-char-digest>"`
+Both action.yml and slim/action.yml reference Docker images using mutable version tags instead of immutable SHA digests. This means the action could silently pull a different (potentially malicious) image if the tag is moved. `action.yml` uses `docker://ghcr.io/super-linter/super-linter:v8.3.2` and `slim/action.yml` uses `docker://ghcr.io/super-linter/super-linter:slim-v8.3.2`. These should be replaced with `@sha256:<64-hex-char-digest>` references.
 
 Locations:
 
@@ -36,8 +31,8 @@ Locations:
 
 **Notes:**
 
-Pinned both Docker image references to immutable SHA256 digests:
-- action.yml: ghcr.io/super-linter/super-linter:v8.3.2 → @sha256:e9d1895a1bdc1f9d9df41f688b27aa891743f23f9fae0f22a3e25eeda8f102db # v8.3.2
-- slim/action.yml: ghcr.io/super-linter/super-linter:slim-v8.3.2 → @sha256:0591b4d7d11be09b00a358340bee9637fcb8d3df474881898b399182471fcee2 # slim-v8.3.2
-Original tag names preserved as comments outside the YAML quotes for readability.
+Pinned both Docker image references to immutable SHA digests:
+- action.yml: ghcr.io/super-linter/super-linter:v8.3.2 → :v8.3.2@sha256:e9d1895a1bdc1f9d9df41f688b27aa891743f23f9fae0f22a3e25eeda8f102db
+- slim/action.yml: ghcr.io/super-linter/super-linter:slim-v8.3.2 → :slim-v8.3.2@sha256:0591b4d7d11be09b00a358340bee9637fcb8d3df474881898b399182471fcee2
+The docker:// scheme and version tags are preserved inline for readability.
 

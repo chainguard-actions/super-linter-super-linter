@@ -1,0 +1,9 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "settings": {
+    "enabled": true,
+    "timeout": 30,
+    "tags": ["alpha", "beta"]
+  }
+}

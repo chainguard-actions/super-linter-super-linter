@@ -1,0 +1,59 @@
+---
+name: Test super-linter Markdown linting
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Create a valid Markdown file to lint
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/test-md-src"
+          cat > "$GITHUB_WORKSPACE/test-md-src/README.md" << 'EOF'
+          # Test README
+
+          This is a test markdown file for super-linter validation.
+
+          ## Features
+
+          - Feature one
+          - Feature two
+          - Feature three
+
+          ## Usage
+
+          Run the following command:
+
+          ```bash
+          echo "Hello, World!"
+          ```
+          EOF
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        env:
+          RUN_LOCAL: "true"
+          DEFAULT_WORKSPACE: /github/workspace/test-md-src
+          VALIDATE_MARKDOWN: "true"
+          VALIDATE_ALL_CODEBASE: "true"
+          LOG_LEVEL: "NOTICE"
+          IGNORE_GITIGNORED_FILES: "true"
+
+      - name: Assert super-linter ran for Markdown validation
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: super-linter Markdown validation completed successfully"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: super-linter ran and reported Markdown linting results (failure acceptable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

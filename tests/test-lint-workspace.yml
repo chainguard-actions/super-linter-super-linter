@@ -1,5 +1,5 @@
 ---
-name: Test super-linter basic usage
+name: Test super-linter linting workspace
 on:
   workflow_dispatch:
 jobs:
@@ -21,30 +21,28 @@ jobs:
             echo "Image pull failed or timed out — will skip super-linter step"
           fi
 
-      - name: Create test files to lint inside workspace
+      - name: Create a minimal workspace with known-good files
         if: steps.image-pull.outputs.pulled == 'true'
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/lint-test-basic"
-          cat > "$GITHUB_WORKSPACE/lint-test-basic/test.sh" << 'EOF'
-          #!/usr/bin/env bash
-          echo "Hello, World!"
-          EOF
-          chmod +x "$GITHUB_WORKSPACE/lint-test-basic/test.sh"
+          mkdir -p "$GITHUB_WORKSPACE/lint-test-workspace"
+          printf '{"hello": "world"}\n' > "$GITHUB_WORKSPACE/lint-test-workspace/example.json"
+          printf -- '---\nkey: value\nlist:\n  - item1\n  - item2\n' > "$GITHUB_WORKSPACE/lint-test-workspace/example.yaml"
 
       - id: action
-        name: Run super-linter
+        name: Run super-linter on minimal workspace
         if: steps.image-pull.outputs.pulled == 'true'
         uses: .
         continue-on-error: true
         env:
           RUN_LOCAL: "true"
-          DEFAULT_WORKSPACE: /github/workspace/lint-test-basic
+          DEFAULT_WORKSPACE: /github/workspace/lint-test-workspace
           VALIDATE_ALL_CODEBASE: "true"
-          VALIDATE_BASH: "true"
+          VALIDATE_YAML: "true"
+          VALIDATE_JSON: "true"
           LOG_LEVEL: WARN
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Assert linter ran
+      - name: Assert super-linter ran
         env:
           OUTCOME: ${{ steps.action.outcome }}
           IMAGE_PULLED: ${{ steps.image-pull.outputs.pulled }}

@@ -2,6 +2,7 @@
   "owner": "super-linter",
   "repo": "super-linter",
   "version": "v8.6.0",
+  "path": "slim",
   "commit_sha": "9e863354e3ff62e0727d37183162c4a88873df41",
   "url": "https://github.com/super-linter/super-linter",
   "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
